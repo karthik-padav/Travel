@@ -1,0 +1,62 @@
+[
+  {
+    "district_name": "North Goa",
+    "state_id": "0b67e323-574d-4544-99e5-67cf221cce1a",
+    "uid": "8ed9f06e-e532-416d-98a5-1204a9bc1f68"
+  },
+  {
+    "district_name": "South Goa",
+    "state_id": "0b67e323-574d-4544-99e5-67cf221cce1a",
+    "uid": "3556d273-2d8f-4084-ac3b-d3732aae8e87"
+  },
+  {
+    "district_name": "Bangalore Urban",
+    "state_id": "2c811628-5409-409a-9aa4-9f9593ba4aad",
+    "uid": "27ca361c-c04f-46fd-8e1b-990e926db6f8"
+  },
+  {
+    "district_name": "Chikkaballapura district",
+    "state_id": "2c811628-5409-409a-9aa4-9f9593ba4aad",
+    "uid": "9f9b2863-1b51-407d-ab29-1b9774ba07e8"
+  },
+  {
+    "district_name": "Ramanagara district",
+    "state_id": "2c811628-5409-409a-9aa4-9f9593ba4aad",
+    "uid": "1276fb8b-427e-4380-a5de-6daf85d2ab96"
+  },
+  {
+    "district_name": "Bangalore Rural",
+    "state_id": "2c811628-5409-409a-9aa4-9f9593ba4aad",
+    "uid": "e77ca7e5-c825-4442-b352-d9a66c53a581"
+  },
+  {
+    "district_name": "Kolar district",
+    "state_id": "2c811628-5409-409a-9aa4-9f9593ba4aad",
+    "uid": "13f92f71-a4f8-4742-8fa5-5c36647e791e"
+  },
+  {
+    "district_name": "Mandya district",
+    "state_id": "2c811628-5409-409a-9aa4-9f9593ba4aad",
+    "uid": "9844d3fc-5113-4475-8d3c-baf2dae1512b"
+  },
+  {
+    "district_name": "Mysuru district",
+    "state_id": "2c811628-5409-409a-9aa4-9f9593ba4aad",
+    "uid": "e7a6e032-a2a6-48c8-bf29-e7fa911a5323"
+  },
+  {
+    "district_name": "Chamarajanagar district",
+    "state_id": "2c811628-5409-409a-9aa4-9f9593ba4aad",
+    "uid": "1e3227c4-9f82-4ec7-9612-46bcb46e8813"
+  },
+  {
+    "district_name": "Kodagu",
+    "state_id": "2c811628-5409-409a-9aa4-9f9593ba4aad",
+    "uid": "d121052a-2bd0-479f-a520-5b6b0b15bfa2"
+  },
+  {
+    "district_name": "Hassan district",
+    "state_id": "2c811628-5409-409a-9aa4-9f9593ba4aad",
+    "uid": "3f5c7593-7d88-4e23-94ff-3802af61086b"
+  }
+]

@@ -1,0 +1,19 @@
+.carousel-btn{
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    z-index: 1;
+    background-color: white;
+    border-radius: 50px;
+    opacity: 0.9;
+    padding: 10px;
+}
+.carousel-btn.right{
+    right: 15px;
+}
+.carousel-btn.left{
+    left: 15px;
+}
+.styles-module_item-container__a8zaY {
+    cursor: default;
+}

@@ -4,45 +4,61 @@ const typeDefs = gql`
   scalar JSON
   scalar Date
 
-
-
-
-  
   type Gmap {
     category: String
+    bannerImage: String
   }
   type Location {
     district_id: ID
     state_id: ID
     country_id: ID
-    country:Country
+    country: Country
     state: State
-    district:District
+    district: District
   }
 
-
-  type Country{
+  type Country {
     country_name: String
     _id: ID
   }
-  type State{
+  type State {
     state_name: String
-    country_id:ID
+    country_id: ID
     _id: ID
   }
-  type District{
+  type District {
     district_name: String
-    state_id:ID
+    state_id: ID
     _id: ID
+  }
+
+  
+  type _State {
+    state_name: String
+    uid: String
+    country:_Country
+  }
+
+  type _Country {
+    country_name: String
+    uid: String
+  }
+
+  type _Location {
+    district_name:String
+    uid:String
+    state:_State
   }
 
   type ToDo {
     id: ID
     title: String
     gmap: Gmap
-    location: Location
-    country:JSON
-    state:JSON
+    open_street_map_location: JSON
+    country: JSON
+    state: JSON
+    bannerImages: JSON
+    location:_Location
   }
 
   type ToDoPagination {
@@ -50,12 +66,11 @@ const typeDefs = gql`
     totalCount: String
   }
 
-
   type DistrictList {
     _id: ID
-    country:Country
-    state:State
-    district_name:String
+    country: Country
+    state: State
+    district_name: String
   }
 
   type DistrictListPagination {
@@ -65,8 +80,8 @@ const typeDefs = gql`
 
   type StateList {
     _id: ID
-    country:Country
-    state_name:String
+    country: Country
+    state_name: String
   }
 
   type StateListPagination {
@@ -84,17 +99,6 @@ const typeDefs = gql`
     data: [CountryList]
     totalCount: String
   }
-  
-
-
-
-
-
-
-
-
-
-
 
   input PostInput {
     title: String!
@@ -185,7 +189,8 @@ const typeDefs = gql`
       skip: Int
       where: JSON
     ): CountryListPagination
-    
+    getDistinct(sort: String, limit: Int, skip: Int, where: JSON): JSON
+
     getPosts(sort: String, limit: Int, skip: Int, where: JSON): PostPagination
   }
 

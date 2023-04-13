@@ -25,53 +25,56 @@ const resolvers = {
     },
     getThingsToDo: async (_, args) => {
       const { sort = "createdAt", limit = 20, skip = 0, where = {} } = args;
+      console.log(args,'args123')
       const [listResult, countResult] = await Promise.all([
         // ToDo.find(where)
         //   .skip(skip)
         //   .limit(limit)
         //   .sort({ [sort]: -1 }),
         ToDo.aggregate([
-          {
-            $lookup: {
-              from: "country",
-              localField: "location.country_id",
-              foreignField: "_id",
-              as: "location.country"
-            }
-          },
-          {
-            $lookup: {
-              from: "state",
-              localField: "location.state_id",
-              foreignField: "_id",
-              as: "location.state"
-            }
-          },
-          {
-            $lookup: {
-              from: "district",
-              localField: "location.district_id",
-              foreignField: "_id",
-              as: "location.district"
-            }
-          },
-          { $unwind: '$location.country' },
-          { $unwind: '$location.state' },
-          { $unwind: '$location.district' },
-          //  {
-          //   $unwind: {
-          //     path: "$state",
-          //     preserveNullAndEmptyArrays: true
-          //   }
-          // }, {
-          //   $lookup: {
-          //     from: "country",
-          //     localField: "address._id",
-          //     foreignField: "address_id",
-          //     as: "address.addressComment",
+          { $match: where },
+          // {
+          //   $geoNear: {
+          //     near: {
+          //       type: "Point",
+          //       coordinates: [
+          //         -73.98142,
+          //         40.71782
+          //       ]
+          //     },
+          //     key: "gmap.geoJson",
+          //     distanceField: "dist.calculated",
+          //     query: {}
           //   }
           // },
-          { $limit: 2 }
+          {
+            $lookup: {
+              from: "_district",
+              localField: "location",
+              foreignField: "uid",
+              as: "location",
+            },
+          },
+          { $unwind: "$location" },
+          {
+            $lookup: {
+              from: "_state",
+              localField: "location.state_id",
+              foreignField: "uid",
+              as: "location.state",
+            },
+          },
+          { $unwind: "$location.state" },
+          {
+            $lookup: {
+              from: "_country",
+              localField: "location.state.country_id",
+              foreignField: "uid",
+              as: "location.state.country",
+            },
+          },
+          { $unwind: "$location.state.country" },
+          { $limit: limit },
         ]),
         ToDo.count(where),
       ]);
@@ -84,12 +87,26 @@ const resolvers = {
       const { sort = "createdAt", limit = 20, skip = 0, where = {} } = args;
       const [listResult, countResult] = await Promise.all([
         District.aggregate([
-          { $match: where, },
-          { $lookup: { from: "state", localField: "state_id", foreignField: "_id", as: "state" } },
-          { $unwind: '$state' },
-          { $lookup: { from: "country", localField: "state.country_id", foreignField: "_id", as: "country" } },
-          { $unwind: '$country' },
-          { $limit: limit }
+          { $match: where },
+          {
+            $lookup: {
+              from: "state",
+              localField: "state_id",
+              foreignField: "_id",
+              as: "state",
+            },
+          },
+          { $unwind: "$state" },
+          {
+            $lookup: {
+              from: "country",
+              localField: "state.country_id",
+              foreignField: "_id",
+              as: "country",
+            },
+          },
+          { $unwind: "$country" },
+          { $limit: limit },
         ]),
         District.count(where),
       ]);
@@ -107,7 +124,7 @@ const resolvers = {
           .sort({ [sort]: -1 }),
         Country.count(where),
       ]);
-      console.log(listResult,'listResult123')
+      console.log(listResult, "listResult123");
       return {
         data: listResult,
         totalCount: countResult,
@@ -117,10 +134,17 @@ const resolvers = {
       const { sort = "createdAt", limit = 20, skip = 0, where = {} } = args;
       const [listResult, countResult] = await Promise.all([
         State.aggregate([
-          { $match: where, },
-          { $lookup: { from: "country", localField: "country_id", foreignField: "_id", as: "country" } },
-          { $unwind: '$country' },
-          { $limit: limit }
+          { $match: where },
+          {
+            $lookup: {
+              from: "country",
+              localField: "country_id",
+              foreignField: "_id",
+              as: "country",
+            },
+          },
+          { $unwind: "$country" },
+          { $limit: limit },
         ]),
         State.count(where),
       ]);
@@ -129,25 +153,15 @@ const resolvers = {
         totalCount: countResult,
       };
     },
-    getDistricts: async (_, args) => {
-      const { sort = "createdAt", limit = 20, skip = 0, where = {} } = args;
-      const [listResult, countResult] = await Promise.all([
-        District.aggregate([
-          { $match: where, },
-          { $lookup: { from: "state", localField: "state_id", foreignField: "_id", as: "state" } },
-          { $unwind: '$state' },
-          { $lookup: { from: "country", localField: "state.country_id", foreignField: "_id", as: "country" } },
-          { $unwind: '$country' },
-          { $limit: limit }
-        ]),
-        District.count(where),
-      ]);
-      return {
-        data: listResult,
-        totalCount: countResult,
-      };
+    getDistinct: async (_, args) => {
+      const {
+        dist = "gmap.category",
+        limit = 20,
+        skip = 0,
+        where = {},
+      } = args;
+      return await ToDo.distinct(dist, where);
     },
-
     getPosts: async (_, args) => {
       const { sort = "createdAt", limit = 20, skip = 0, where = {} } = args;
       const [listResult, countResult] = await Promise.all([

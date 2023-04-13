@@ -8,5 +8,5 @@ const StateSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.models.state ||
-  mongoose.model("state", StateSchema,'state');
+export default mongoose.models._state ||
+  mongoose.model("_state", StateSchema,'_state');
