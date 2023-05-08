@@ -2,7 +2,6 @@ import { gql } from "@apollo/client";
 import client from "./apollo-client";
 
 export async function getThingsToDo(params) {
-  console.log(params, "params123");
   const { limit = 20, skip = 0, where = {} } = { ...params };
 
   const { data } = await client.query({
@@ -11,23 +10,19 @@ export async function getThingsToDo(params) {
         getThingsToDo(limit: $limit, skip: $skip, where: $where) {
           totalCount
           data {
-            gmap {
-              bannerImage
-            }
-            bannerImages
             title
+            uid
+            image
             location {
-              country {
-                country_name
-                _id
-              }
+              uid
+              district_name
               state {
-                _id
+                uid
                 state_name
-              }
-              district {
-                _id
-                district_name
+                country {
+                  uid
+                  country_name
+                }
               }
             }
           }
@@ -39,3 +34,4 @@ export async function getThingsToDo(params) {
   });
   return data?.getThingsToDo?.data;
 }
+

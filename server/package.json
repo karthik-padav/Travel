@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "apollo-server-micro": "2.13.1",
+    "file-saver": "^2.0.5",
+    "fs": "^0.0.1-security",
     "graphql": "15.0.0",
     "graphql-type-json": "^0.3.2",
     "micro-cors": "^0.1.1",
@@ -15,6 +17,8 @@
     "next": "latest",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "uuid": "^9.0.0"
+    "request": "^2.88.2",
+    "uuid": "^9.0.0",
+    "xmlhttprequest": "^1.8.0"
   }
 }

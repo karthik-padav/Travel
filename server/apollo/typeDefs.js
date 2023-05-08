@@ -5,6 +5,18 @@ const typeDefs = gql`
   scalar Date
 
   type Gmap {
+    title: String
+    sub_title: String
+    description: String
+    rating: String
+    review_count: String
+    timings: JSON
+    website: String
+    address: String
+    phone: String
+    plus_code: String
+    geoJson: JSON
+    page_URL: String
     category: String
     bannerImage: String
   }
@@ -19,12 +31,12 @@ const typeDefs = gql`
 
   type Country {
     country_name: String
-    _id: ID
+    uid: ID
   }
   type State {
     state_name: String
     country_id: ID
-    _id: ID
+    uid: ID
   }
   type District {
     district_name: String
@@ -32,33 +44,56 @@ const typeDefs = gql`
     _id: ID
   }
 
-  
   type _State {
     state_name: String
-    uid: String
-    country:_Country
+    uid: ID
+    country: _Country
+    banner_image: String
   }
 
   type _Country {
     country_name: String
-    uid: String
+    uid: ID
+    banner_image: String
   }
 
   type _Location {
-    district_name:String
-    uid:String
-    state:_State
+    district_name: String
+    uid: String
+    state: _State
+    banner_image: String
+  }
+
+  type GPT {
+    nearest_railway_station: String
+    railway_station_distance: String
+    nearest_airport: String
+    airport_distance: String
+    how_to_reach_by_bus: String
+    things_to_do: JSON
+    famous_food_to_try: JSON
+    best_months_to_visit: JSON
+    famous_for: JSON
+    entry_fee: String
+    exploration_hours: String
   }
 
   type ToDo {
     id: ID
+    gpt:GPT
     title: String
+    image: String
+    images: JSON
+    sub_title: String
+    ratings: String
+    review: String
+    rate: String
+    description: String
+    gmap_url: String
+    uid: String
     gmap: Gmap
     open_street_map_location: JSON
-    country: JSON
-    state: JSON
-    bannerImages: JSON
-    location:_Location
+    location: _Location
   }
 
   type ToDoPagination {
@@ -67,10 +102,11 @@ const typeDefs = gql`
   }
 
   type DistrictList {
-    _id: ID
+    uid: ID
     country: Country
     state: State
     district_name: String
+    banner_image: String
   }
 
   type DistrictListPagination {
@@ -79,9 +115,10 @@ const typeDefs = gql`
   }
 
   type StateList {
-    _id: ID
+    uid: ID
     country: Country
     state_name: String
+    banner_image: String
   }
 
   type StateListPagination {
@@ -90,9 +127,10 @@ const typeDefs = gql`
   }
 
   type CountryList {
-    _id: ID
+    uid: ID
     country_name: String
     country_code: String
+    banner_image: String
   }
 
   type CountryListPagination {
@@ -100,72 +138,15 @@ const typeDefs = gql`
     totalCount: String
   }
 
-  input PostInput {
-    title: String!
-    searchKeyword: String!
-    slug: String!
-    category: String!
-  }
-
-  input PostUpdate {
-    title: String!
-    searchKeyword: String!
-    slug: String!
-  }
-
-  input ProductInput {
-    title: String!
-    productId: String!
-    productColors: JSON
-    price: JSON
-    rating: Float
-    thumbnail: JSON
-    reviews: JSON
-  }
-
-  type Post {
-    id: ID
-    title: String
-    searchKeyword: String
-    slug: String
-    category: String
-    lastScrappedOn: Date
-    products(
+  type Query {
+    hello: String
+    getThingsToDo(
       sort: String
       limit: Int
       skip: Int
       where: JSON
-    ): ProductsPagination
-  }
-
-  type Products {
-    id: ID
-    title: String
-    productId: String
-    productColors: JSON
-    price: JSON
-    rating: Float
-    thumbnail: JSON
-    reviews: JSON
-    images: JSON
-    features: JSON
-    technicalDetails: JSON
-    productInformation: JSON
-  }
-
-  type ProductsPagination {
-    data: [Products]
-    totalCount: String
-  }
-
-  type PostPagination {
-    data: [Post]
-    totalCount: String
-  }
-
-  type Query {
-    hello: String
-    getThingsToDo(
+    ): ToDoPagination
+    getNearbyLocation(
       sort: String
       limit: Int
       skip: Int
@@ -190,15 +171,6 @@ const typeDefs = gql`
       where: JSON
     ): CountryListPagination
     getDistinct(sort: String, limit: Int, skip: Int, where: JSON): JSON
-
-    getPosts(sort: String, limit: Int, skip: Int, where: JSON): PostPagination
-  }
-
-  type Mutation {
-    createPost(post: PostInput): Post
-    createProduct(product: [ProductInput]): [Products]
-    deletePost(id: ID!): String!
-    updatePost(id: ID!, post: PostUpdate): Post
   }
 `;
 

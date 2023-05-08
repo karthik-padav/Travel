@@ -1,4 +1,5 @@
 import clientPromise from "lib/mongodb";
+import { getUUID } from "lib/common";
 import { v4 as uuidv4 } from "uuid";
 
 import path from "path";
@@ -9,6 +10,10 @@ import data from "json/Goa";
 import grab_gmap_url from "json/grab_gmap_url";
 import gmap_details from "json/gmap_details";
 import north_goa from "json/north_goa";
+import list from "json/backup/things_to_do";
+import json_country from "json/backup/country";
+import json_state from "json/backup/state";
+import json_district from "json/backup/district";
 
 const collection_name = "_things_to_do";
 const c_country = "_country";
@@ -196,6 +201,19 @@ const getLocation = async ({ db, location }) => {
   return finalLocation;
 };
 
+const formateTimings = (timings) => {
+  const obj = {};
+  if (!timings) return null;
+  let formated = [];
+  for (const t of timings) {
+    let value = t.trim().split(",");
+    value[0] = value[0].split(" ")?.[0];
+    const [first, ...rest] = value;
+    obj[first.trim()] = rest.join(",").trim();
+  }
+  return obj;
+};
+
 export default async function handler(req, res) {
   // const jsonDirectory = path.join(process.cwd(), 'json');
   // //Read the json data file data.json
@@ -262,43 +280,66 @@ export default async function handler(req, res) {
   //   res.status(200).json(data);
 
   const client = await clientPromise;
-  const db = client.db("travel");
+  const db = client.db("_travel");
 
-  
+  // const collection_name = "things_to_do";
+  // const c_country = "country";
+  // const c_state = "state";
+  // const c_district = "district";
+  // let allPosts = await db.collection("things_to_do").find({}).toArray();
+  // let s = await db.collection("state").find({}).toArray();
 
-  let allPosts = await db.collection(c_district).find({}).toArray();
+  let list = await db.collection("things_to_do").find({gpt:{$exists:false}}).toArray();
+  const arr = [];
+  for (const l of list) {
+        arr.push({title:l.gmap.title,uid:l.uid});
+  }
+
+  // for (const a of d) {
+  //   const uid = await getUUID();
+  //   let d = await db.collection("things_to_do").find({ location: a.uid }).toArray();
+  //   for (const _s of d) {
+  //     console.log(_s);
+  //     await db
+  //       .collection("things_to_do")
+  //       .updateOne({ _id: _s._id }, { $set: { location: uid } });
+  //   }
+  //   await db
+  //     .collection("district")
+  //     .updateOne({ _id: a._id }, { $set: { uid: uid } });
+  // }
 
   //   await update_gmap_url(allPosts,db)
 
   // await update_gmap_details(allPosts, db);
-//   let arr = [];
-//   for (var a of allPosts) {
-//     const longitude = a.gmap.geoJson.coordinates[0];
-//     const latitude = a.gmap.geoJson.coordinates[1];
-//     console.log(latitude, longitude);
-//     let location = await fetch(
-//       `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=jsonv2&accept-language=en`
-//     );
-//     location = await location.json();
-//     const location_code = await getLocation({ db, location });
-//     if (location_code) {
-//       await db
-//         .collection(collection_name)
-//         .updateOne(
-//           { _id: a._id },
-//           {
-//             $set: {
-//               location: location_code,
-//               open_street_map_location: location,
-//             },
-//           }
-//         );
-//     }
-//     arr.push(location);
-//     // break;
-//   }
+  //   let arr = [];
+  //   for (var a of allPosts) {
+  //     const longitude = a.gmap.geoJson.coordinates[0];
+  //     const latitude = a.gmap.geoJson.coordinates[1];
+  //     console.log(latitude, longitude);
+  //     let location = await fetch(
+  //       `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=jsonv2&accept-language=en`
+  //     );
+  //     location = await location.json();
+  //     const location_code = await getLocation({ db, location });
+  //     if (location_code) {
+  //       await db
+  //         .collection(collection_name)
+  //         .updateOne(
+  //           { _id: a._id },
+  //           {
+  //             $set: {
+  //               location: location_code,
+  //               open_street_map_location: location,
+  //             },
+  //           }
+  //         );
+  //     }
+  //     arr.push(location);
+  //     // break;
+  //   }
 
-  res.status(200).json(allPosts);
+  res.status(200).json(arr);
 
   // let array = [];
   // // let allPosts = await db.collection(collection_name).find({ "location.country_code": { "$exists": true } }).toArray();
