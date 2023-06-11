@@ -3,6 +3,8 @@ import ToDo from "apollo/models/ToDo.model";
 import District from "apollo/models/District.model";
 import State from "apollo/models/State.model";
 import Country from "apollo/models/Country.model";
+import Weather from "apollo/models/Weather.model";
+
 import GraphQLJSON from "graphql-type-json";
 import { ApolloError } from "apollo-server-micro";
 import { GraphQLScalarType, Kind } from "graphql";
@@ -173,9 +175,43 @@ const resolvers = {
       ]);
       return { data: listResult, totalCount: countResult };
     },
-    getDistinct: async (_, args) => {
-      const { dist = "gmap.category", limit = 20, skip = 0, where = {} } = args;
-      return await ToDo.distinct(dist, where);
+    // getDistinct: async (_, args) => {
+    //   const { dist = "gmap.category", limit = 20, skip = 0, where = {} } = args;
+    //   return await ToDo.distinct(dist, where);
+    // },
+    getWeather: async (_, args) => {
+      const { where = {} } = args;
+      const {
+        latitude = "73.9116272",
+        longitude = "15.5008938",
+        ...rest
+      } = { ...where };
+      let weather = {};
+      if (latitude && longitude) {
+        const _weather = await Weather.findOne({
+          latitude: latitude,
+          longitude: longitude,
+          ...rest,
+        });
+        if (_weather) {
+          console.log(_weather, "From db");
+          return _weather;
+        } else {
+          const API_KEY = "5c018098d783810191a3b46158c7382c";
+          let resp = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=imperial`
+          );
+          if (resp.status === 200) {
+            weather = { ...(await resp.json()), latitude, longitude };
+            console.log(weather, "weather123");
+            const weatherResp = new Weather({ title: weather });
+            const savedPost = await weatherResp.save();
+            // const savedPost = await Weather.create(weather);
+            return weather;
+          }
+        }
+      }
+      return weather;
     },
   },
 

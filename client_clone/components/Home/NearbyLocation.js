@@ -25,18 +25,21 @@ export default function NearbyLocation({ list }) {
                 <div className="hover:shadow-md border rounded-lg p-1 h-full">
                   <Link href={redirect}>
                     <div className="h-52 relative rounded-xl overflow-hidden">
-                      <img
+                      {/* <img
                         className="h-full w-full object-cover"
                         src={item?.image || "/images/placeholder-image.jpg"}
                         alt={item.title}
-                      />
-                      {/* <Image
-                        src={item || "/images/placeholder-image.jpg"}
-                        layout="fill"
-                        objectFit="cover"
-                        quality={100}
-                        alt=""
                       /> */}
+
+                      <Image
+                        className="h-full"
+                        src={item?.image || "/images/placeholder-image.jpg"}
+                        width={1000}
+                        height={1000}
+                        quality={100}
+                        object-fit="fill"
+                        alt={item.title}
+                      />
                     </div>
                     <h3 className="pt-1 line-clamp-one font-semibold">
                       {item.title}

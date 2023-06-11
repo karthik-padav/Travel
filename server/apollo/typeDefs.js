@@ -80,7 +80,7 @@ const typeDefs = gql`
 
   type ToDo {
     id: ID
-    gpt:GPT
+    gpt: GPT
     title: String
     image: String
     images: JSON
@@ -171,6 +171,7 @@ const typeDefs = gql`
       where: JSON
     ): CountryListPagination
     getDistinct(sort: String, limit: Int, skip: Int, where: JSON): JSON
+    getWeather(where: JSON): JSON
   }
 `;
 

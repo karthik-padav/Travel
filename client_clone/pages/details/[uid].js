@@ -7,10 +7,12 @@ import StarRatings from "react-star-ratings";
 import Link from "next/link";
 import { Phone, Website, Address } from "@/utils/icons";
 import { getHowToReach } from "@/utils/common";
+import { useEffect, useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Details(props) {
+  const [weatherData, setWeatherData] = useState([]);
   const { details, nearByLocation = [] } = { ...props };
   const { gpt } = { ...details };
   const {
@@ -28,7 +30,6 @@ export default function Details(props) {
   } = { ...gpt };
   const uid = details?.uid;
   console.log(details, "details123");
-  if (!uid) return null;
   const title = details?.title;
   const sub_title_1 = details?.sub_title;
   const sub_title_2 = details?.gmap?.sub_title;
@@ -56,6 +57,13 @@ export default function Details(props) {
     how_to_reach_by_bus,
     airport_distance,
   });
+  let howToReach = [];
+  if (byAir)
+    howToReach.push({ icon: "plane.png", title: "By Flight", value: byAir });
+  if (byRoad)
+    howToReach.push({ icon: "bus.png", title: "By Bus", value: byRoad });
+  if (byTrain)
+    howToReach.push({ icon: "train.png", title: "By Train", value: byTrain });
 
   let info = [];
   if (address)
@@ -84,6 +92,34 @@ export default function Details(props) {
       icon: <Website />,
     });
   const timings = details?.gmap?.timings || {};
+
+  async function onLoad() {
+    const latitude = details?.gmap?.geoJson?.coordinates?.[0];
+    const longitude = details?.gmap?.geoJson?.coordinates?.[1];
+    if (latitude && longitude) {
+      let resp = await fetch(
+        `${process.env.BASE_URL}/api/getWeather?latitude=${latitude}&longitude=${longitude}`
+      );
+      resp = await resp.json();
+      if (resp.status === 200) {
+        let _weatherData = [
+          { title: "Temperature", value: `${resp.data.main.temp}°C` },
+          { title: "Humidity", value: `${resp.data.main.humidity}%` },
+          { title: "Wind Speed", value: `${resp.data.wind.speed}m/s` },
+        ];
+        for (const w of resp.data?.weather || []) {
+          _weatherData.push({ title: w.description, icon: w.icon });
+        }
+        setWeatherData(_weatherData);
+      }
+    }
+  }
+
+  useEffect(() => {
+    onLoad();
+  }, [details]);
+
+  if (!uid) return null;
   return (
     <div className="grid my-4 gap-4 px-10 grid-cols-4">
       <div className="col-span-3">
@@ -93,18 +129,15 @@ export default function Details(props) {
               {(details?.images || []).map((item, index) => (
                 <div className="h-full" key={item}>
                   <div className="h-96 relative rounded-lg overflow-hidden">
-                    <img
-                      className="h-full w-full object-cover"
+                    <Image
+                      className="h-full"
                       src={item || "/images/placeholder-image.jpg"}
+                      width={1000}
+                      height={1000}
+                      quality={100}
+                      object-fit="fill"
                       alt={title}
                     />
-                    {/* <Image
-                      src={item || "/images/placeholder-image.jpg"}
-                      layout="fill"
-                      objectFit="cover"
-                      quality={100}
-                      alt=""
-                    /> */}
                   </div>
                 </div>
               ))}
@@ -223,16 +256,35 @@ export default function Details(props) {
           </section>
         )}
 
-        {true && (
+        {weatherData.length > 0 && (
           <section>
             <hr className="my-4" />
             <h2 className="font-semibold text-xl mb-2">Weather:</h2>
-            <div className="grid gap-4 grid-cols-4">asd</div>
+
+            <div className="grid  gap-4 grid-cols-4">
+              {weatherData.map((item, index) => (
+                <div key={index} className="col-span-1 flex items-center">
+                  <p className="flex items-center capitalize">
+                    <span className="mr-2">{item.title}</span>
+                    {item.icon && (
+                      <img
+                        src={`http://openweathermap.org/img/w/${item.icon}.png`}
+                        alt="Weather Icon"
+                      />
+                    )}
+                    {item.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+
             {best_months_to_visit.length > 0 && (
-              <h3 className="font-semibold mb-2">
+              <p className="mb-2">
                 Best month to visit {title} are{" "}
-                {best_months_to_visit.join(", ")}
-              </h3>
+                <span className="font-semibold">
+                  {best_months_to_visit.join(", ")}
+                </span>
+              </p>
             )}
           </section>
         )}
@@ -258,25 +310,25 @@ export default function Details(props) {
           )}
         </section>
 
-        <section>
-          <hr className="my-4" />
-          <h2 className="text-xl font-semibold">How To Reach {title}:</h2>
-          {byAir && (
-            <p className="mt-2">
-              <span className="font-semibold">By Flight:</span> {byAir}
-            </p>
-          )}
-          {byRoad && (
-            <p className="mt-2">
-              <span className="font-semibold">By Bus:</span> {byRoad}
-            </p>
-          )}
-          {byTrain && (
-            <p className="mt-2">
-              <span className="font-semibold">By Train:</span> {byTrain}
-            </p>
-          )}
-        </section>
+        {howToReach.length > 0 && (
+          <section>
+            <hr className="my-4" />
+            <h2 className="text-xl font-semibold">How To Reach {title}:</h2>
+            {howToReach.map((item, index) => (
+              <div className="flex py-2 items-center">
+                <img
+                  src={`/images/${item.icon}`}
+                  className="w-10 h-10 mr-2 mt-2"
+                  alt="By Flight"
+                />
+                <p className="">
+                  <span className="font-semibold">{item.title}:</span>{" "}
+                  {item.value}
+                </p>
+              </div>
+            ))}
+          </section>
+        )}
 
         {things_to_do.length > 0 && (
           <section>
@@ -343,9 +395,13 @@ export default function Details(props) {
                     <div className="hover:shadow-md border rounded-lg p-1 h-full">
                       <Link href={redirect}>
                         <div className="h-52 relative rounded-lg overflow-hidden">
-                          <img
-                            className="h-full w-full object-cover"
+                          <Image
+                            className="h-full"
                             src={item?.image || "/images/placeholder-image.jpg"}
+                            width={1000}
+                            height={1000}
+                            quality={100}
+                            object-fit="fill"
                             alt={item.title}
                           />
                         </div>
@@ -401,18 +457,21 @@ export default function Details(props) {
                     <div className="hover:shadow-md border rounded-lg p-1 h-full">
                       <Link href={redirect}>
                         <div className="h-52 relative rounded-lg overflow-hidden">
-                          <img
+                          {/* <img
                             className="h-full w-full object-cover"
                             src={item?.image || "/images/placeholder-image.jpg"}
                             alt={item.title}
-                          />
-                          {/* <Image
-                            src={item|| "/images/placeholder-image.jpg"}
-                            layout="fill"
-                            objectFit="cover"
-                            quality={100}
-                            alt=""
                           /> */}
+
+                          <Image
+                            className="h-full"
+                            src={item?.image || "/images/placeholder-image.jpg"}
+                            width={1000}
+                            height={1000}
+                            quality={100}
+                            object-fit="fill"
+                            alt={item.title}
+                          />
                         </div>
                         <h3 className="pt-1 line-clamp-one font-semibold">
                           {item.title}
@@ -454,18 +513,21 @@ export default function Details(props) {
                 <div className="hover:shadow-md border rounded-lg p-1 h-full">
                   <Link href={redirect}>
                     <div className="h-32 relative rounded-lg overflow-hidden">
-                      <img
+                      {/* <img
                         className="h-full w-full object-cover"
                         src={item?.image || "/images/placeholder-image.jpg"}
                         alt={item.title}
-                      />
-                      {/* <Image
-                        src={item?.image || "/images/placeholder-image.jpg"}
-                        layout="fill"
-                        objectFit="cover"
-                        quality={100}
-                        alt=""
                       /> */}
+
+                      <Image
+                        className="h-full"
+                        src={item?.image || "/images/placeholder-image.jpg"}
+                        width={1000}
+                        height={1000}
+                        quality={100}
+                        object-fit="fill"
+                        alt={item.title}
+                      />
                     </div>
                     <p className="pt-1 text-sm line-clamp-one font-semibold">
                       {item.title}

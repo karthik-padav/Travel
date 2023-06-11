@@ -9,8 +9,6 @@ export default function Home({ thingsToDo = [], states = [] }) {
         <Banner />
       </section>
 
-      <img src="https://lh5.googleusercontent.com/p/AF1QipMmQs-XEIqLN9irXjfjKv9zu1lUtaKMnpVT5tBE=w370-h253-n-k-no" />
-
       <div className="grid grid-cols-4">
         <div className="px-10 col-span-3">
           <section className="py-5 pt-10">

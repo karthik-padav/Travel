@@ -3,6 +3,8 @@ const nextConfig = {
   reactStrictMode: true,
   env: {
     IP2KEY: process.env.IP2KEY,
+    IMAGE_BASE_URL: process.env.IMAGE_BASE_URL || "",
+    BASE_URL: process.env.BASE_URL || "http://localhost:2009",
   },
   images: {
     domains: [
@@ -11,6 +13,14 @@ const nextConfig = {
       "encrypted-tbn3.gstatic.com",
       "encrypted-tbn1.gstatic.com",
       "encrypted-tbn2.gstatic.com",
+    ],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+        port: "",
+        pathname: "**",
+      },
     ],
   },
 };

@@ -44,8 +44,12 @@ export default function Details(props) {
           <div className="absolute text-5xl font-semibold text-white py-4 px-2 bottom-0 left-0 capitalize bg-black bg-opacity-30 w-full">
             <h1>{header}</h1>
           </div>
-          <img
+          <Image
             className="h-80 w-full object-cover"
+            width={1000}
+            height={1000}
+            quality={100}
+            object-fit="fill"
             alt={header}
             src={banner_image || placeholderImage}
           />
@@ -69,8 +73,12 @@ export default function Details(props) {
                 <div className="hover:shadow-md border rounded-lg p-1 h-full">
                   <Link href={redirect}>
                     <div className="h-52 relative rounded-lg overflow-hidden">
-                      <img
-                        className="h-full w-full object-cover"
+                      <Image
+                        className="h-full"
+                        width={1000}
+                        height={1000}
+                        quality={100}
+                        object-fit="fill"
                         src={item?.image || placeholderImage}
                         alt={item.title}
                       />
@@ -137,8 +145,12 @@ export default function Details(props) {
                 <div className="hover:shadow-md border rounded-lg p-1 h-full">
                   <Link href={redirect}>
                     <div className="h-32 relative rounded-lg overflow-hidden">
-                      <img
-                        className="h-full w-full object-cover"
+                      <Image
+                        className="h-full"
+                        width={1000}
+                        height={1000}
+                        quality={100}
+                        object-fit="fill"
                         src={item?.image || placeholderImage}
                         alt={item.title}
                       />

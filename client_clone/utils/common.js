@@ -28,3 +28,10 @@ export const getHowToReach = ({
 
   return { byAir, byRoad, byTrain };
 };
+
+export const getFileName = (url) => {
+  let a = url.split("=");
+  a = a[a.length - 1];
+  a = a.replace(/:/g);
+  return `${a}.png`;
+};
