@@ -4,7 +4,8 @@ const nextConfig = {
   env: {
     IP2KEY: process.env.IP2KEY,
     IMAGE_BASE_URL: process.env.IMAGE_BASE_URL || "",
-    BASE_URL: process.env.BASE_URL || "http://localhost:2009",
+    BASE_URL: process.env.BASE_URL || "http://localhost:3001",
+    IP_INFO: process.env.IP_INFO,
   },
   images: {
     domains: [

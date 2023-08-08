@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { getThingsToDo } from "@/apollo/services";
 import Link from "next/link";
 
-export default function NearbyLocation({ list }) {
+export default function HorizontalCarouse({ list }) {
   return (
     <>
       {list.length > 0 && (
@@ -41,11 +41,9 @@ export default function NearbyLocation({ list }) {
                         alt={item.title}
                       />
                     </div>
-                    <h3 className="pt-1 line-clamp-one font-semibold">
-                      {item.title}
-                    </h3>
+                    <h3 className="pt-1 line-clamp-one ">{item.title}</h3>
                   </Link>
-                  <p className="text-blue-700">
+                  <p className="text-blue-400">
                     {district_name && district_id && (
                       <span className="mr-1">
                         <Link href="">{district_name},</Link>

@@ -4,6 +4,11 @@ const typeDefs = gql`
   scalar JSON
   scalar Date
 
+  type GEOLOC {
+    type: String
+    coordinates: [Int]
+  }
+
   type Gmap {
     title: String
     sub_title: String

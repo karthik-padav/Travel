@@ -4,7 +4,6 @@ import  { NextRequest } from 'next/server'
 export async function getIpAddress() {
   const IP2KEY = process.env.IP2KEY
   if (!IP2KEY) return false;
-  console.log(IP2KEY, "IP2KEY");
 
   // let resp = await fetch("https://api-ipv6.ip.sb/ip");
   // if (!ip?.ip) return false;

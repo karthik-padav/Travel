@@ -26,13 +26,29 @@ const resolvers = {
       return "Hello world";
     },
     getThingsToDo: async (_, args) => {
-      const {
-        sort = "createdAt",
-        limit,
-        skip = 0,
-        where = { gpt: { $exists: true } },
-      } = args;
+      const { sort = "createdAt", limit, skip = 0, where = {} } = args;
+      const { lat, long, maxDistance, ...restWhere } = where;
+      console.log(args, "args123");
+      console.log(restWhere, "restWhere123");
+      let geoRadius = [];
+      if (lat && long) {
+        geoRadius = [
+          {
+            $geoNear: {
+              near: {
+                type: "Point",
+                coordinates: [Number(long), Number(lat)],
+              },
+              distanceField: "distance",
+              spherical: true,
+              maxDistance: maxDistance || 1000,
+            },
+          },
+        ];
+      }
       let toDoArray = [
+        ...geoRadius,
+        { $match: restWhere },
         {
           $lookup: {
             from: "district",
@@ -60,53 +76,14 @@ const resolvers = {
           },
         },
         { $unwind: "$location.state.country" },
-        { $match: where },
       ];
       if (limit > 1) toDoArray.push({ $limit: limit });
+      await ToDo.init();
       const [listResult, countResult] = await Promise.all([
         ToDo.aggregate(toDoArray),
-        ToDo.count(where),
+        ToDo.count(restWhere),
       ]);
-      return {
-        data: listResult,
-        totalCount: countResult,
-      };
-    },
-    getNearbyLocation: async (_, args) => {
-      const { sort = "createdAt", limit = 20, skip = 0, where = {} } = args;
-      const [listResult, countResult] = await Promise.all([
-        // ToDo.find({
-        //   gmap: {
-        //     geoJson: {
-        //       $nearSphere: {
-        //         $geometry: {
-        //           type: "Point",
-        //           coordinates: [73.9215933, 15.0887849],
-        //         },
-        //         $maxDistance: 100,
-        //       },
-        //     },
-        //   },
-        // }),
-        ToDo.aggregate([
-          {
-            $geoNear: {
-              near: {
-                type: "Point",
-                coordinates: [73.9215933, 15.0887849],
-              },
-              distanceField: "distanceFrom",
-              maxDistance: 100,
-              spherical: true,
-            },
-          },
-        ]),
-        ToDo.count(where),
-      ]);
-      return {
-        data: listResult,
-        totalCount: countResult,
-      };
+      return { data: listResult, totalCount: countResult };
     },
     getDistricts: async (_, args) => {
       const { sort = "createdAt", limit = 20, skip = 0, where = {} } = args;
@@ -149,7 +126,6 @@ const resolvers = {
           .sort({ [sort]: -1 }),
         Country.count(where),
       ]);
-      console.log(listResult, "listResult123");
       return {
         data: listResult,
         totalCount: countResult,
@@ -174,44 +150,6 @@ const resolvers = {
         State.count(where),
       ]);
       return { data: listResult, totalCount: countResult };
-    },
-    // getDistinct: async (_, args) => {
-    //   const { dist = "gmap.category", limit = 20, skip = 0, where = {} } = args;
-    //   return await ToDo.distinct(dist, where);
-    // },
-    getWeather: async (_, args) => {
-      const { where = {} } = args;
-      const {
-        latitude = "73.9116272",
-        longitude = "15.5008938",
-        ...rest
-      } = { ...where };
-      let weather = {};
-      if (latitude && longitude) {
-        const _weather = await Weather.findOne({
-          latitude: latitude,
-          longitude: longitude,
-          ...rest,
-        });
-        if (_weather) {
-          console.log(_weather, "From db");
-          return _weather;
-        } else {
-          const API_KEY = "5c018098d783810191a3b46158c7382c";
-          let resp = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=imperial`
-          );
-          if (resp.status === 200) {
-            weather = { ...(await resp.json()), latitude, longitude };
-            console.log(weather, "weather123");
-            const weatherResp = new Weather({ title: weather });
-            const savedPost = await weatherResp.save();
-            // const savedPost = await Weather.create(weather);
-            return weather;
-          }
-        }
-      }
-      return weather;
     },
   },
 

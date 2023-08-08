@@ -10,7 +10,7 @@ import { Phone, Website, Address } from "@/utils/icons";
 const inter = Inter({ subsets: ["latin"] });
 const placeholderImage = "/images/placeholder-image.jpg";
 
-export default function Details(props) {
+export default function Places(props) {
   const { list, nearByLocation = [], uid } = { ...props };
   if (!list?.length) return null;
 
@@ -41,7 +41,7 @@ export default function Details(props) {
     <div className="grid my-4 gap-4 px-10 grid-cols-4">
       <div className="col-span-3">
         <div className="rounded-lg relative overflow-hidden">
-          <div className="absolute text-5xl font-semibold text-white py-4 px-2 bottom-0 left-0 capitalize bg-black bg-opacity-30 w-full">
+          <div className="absolute text-5xl  text-white py-4 px-2 bottom-0 left-0 capitalize bg-black bg-opacity-30 w-full">
             <h1>{header}</h1>
           </div>
           <Image
@@ -56,7 +56,7 @@ export default function Details(props) {
         </div>
 
         <div className="my-4">
-          <h2 className="font-semibold text-2xl">Things to do in {title}</h2>
+          <h2 className=" text-2xl">Things to do in {title}</h2>
         </div>
 
         <div className="grid gap-4 my-4 grid-cols-12">
@@ -83,14 +83,12 @@ export default function Details(props) {
                         alt={item.title}
                       />
                     </div>
-                    <h3 className="pt-1 line-clamp-one font-semibold">
-                      {item.title}
-                    </h3>
+                    <h3 className="pt-1 line-clamp-one ">{item.title}</h3>
                   </Link>
                   <p className="capitalize">
                     Located in:{" "}
                     {district_name && district_id && (
-                      <span className="text-blue-700 mr-1">
+                      <span className="text-blue-400 mr-1">
                         <Link
                           href={`/places/${district_id}+place+to+visit+in+${district_name.replace(
                             / /g,
@@ -102,7 +100,7 @@ export default function Details(props) {
                       </span>
                     )}
                     {state_name && state_id && (
-                      <span className="text-blue-700 mr-1">
+                      <span className="text-blue-400 mr-1">
                         <Link
                           href={`/places/${state_id}+place+to+visit+in+${state_name.replace(
                             / /g,
@@ -114,7 +112,7 @@ export default function Details(props) {
                       </span>
                     )}
                     {country_name && country_id && (
-                      <span className="text-blue-700">
+                      <span className="text-blue-400">
                         <Link
                           href={`/places/${country_id}+place+to+visit+in+${country_name.replace(
                             / /g,
@@ -134,7 +132,7 @@ export default function Details(props) {
       </div>
 
       <aside>
-        <h3 className="font-semibold text-xl">Nearby Places</h3>
+        <h3 className=" text-xl">Nearby Places</h3>
         <div className="grid my-4 gap-2 grid-cols-2">
           {nearByLocation.map((item) => {
             let redirect = `/details/${item.uid}`;
@@ -155,9 +153,7 @@ export default function Details(props) {
                         alt={item.title}
                       />
                     </div>
-                    <p className="pt-1 text-sm line-clamp-one font-semibold">
-                      {item.title}
-                    </p>
+                    <p className="pt-1 text-sm line-clamp-one ">{item.title}</p>
                   </Link>
                 </div>
               </div>
@@ -245,7 +241,6 @@ export async function getStaticProps(context) {
         skip: 0,
       },
     });
-    // console.log(data, "data123");
     list = data?.getThingsToDo?.data || [];
 
     nearByLocation = await client.query({

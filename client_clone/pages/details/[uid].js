@@ -5,13 +5,14 @@ import client from "../../apollo/apollo-client";
 import CarouselWrapper from "@/components/CarouselWrapper";
 import StarRatings from "react-star-ratings";
 import Link from "next/link";
-import { Phone, Website, Address } from "@/utils/icons";
-import { getHowToReach } from "@/utils/common";
+import { getHowToReach, getInfo, getWeather } from "@/utils/common";
 import { useEffect, useState } from "react";
+import { getThingsToDo } from "@/apollo/services";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Details(props) {
+  console.log(props, "props123");
   const [weatherData, setWeatherData] = useState([]);
   const { details, nearByLocation = [] } = { ...props };
   const { gpt } = { ...details };
@@ -29,7 +30,6 @@ export default function Details(props) {
     entry_fee,
   } = { ...gpt };
   const uid = details?.uid;
-  console.log(details, "details123");
   const title = details?.title;
   const sub_title_1 = details?.sub_title;
   const sub_title_2 = details?.gmap?.sub_title;
@@ -65,53 +65,15 @@ export default function Details(props) {
   if (byTrain)
     howToReach.push({ icon: "train.png", title: "By Train", value: byTrain });
 
-  let info = [];
-  if (address)
-    info.push({
-      value: (
-        <a target="_blank" href={gmapURL}>
-          {address}
-        </a>
-      ),
-      icon: <Address />,
-    });
-  if (phone)
-    info.push({
-      label: "",
-      value: <a href={`tel:${phone}`}>{phone}</a>,
-      icon: <Phone />,
-    });
-  if (website)
-    info.push({
-      label: "",
-      value: (
-        <a target="_blank" href={website}>
-          {website}
-        </a>
-      ),
-      icon: <Website />,
-    });
+  const info = getInfo({ phone, address, gmapURL, website });
   const timings = details?.gmap?.timings || {};
 
   async function onLoad() {
     const latitude = details?.gmap?.geoJson?.coordinates?.[0];
     const longitude = details?.gmap?.geoJson?.coordinates?.[1];
     if (latitude && longitude) {
-      let resp = await fetch(
-        `${process.env.BASE_URL}/api/getWeather?latitude=${latitude}&longitude=${longitude}`
-      );
-      resp = await resp.json();
-      if (resp.status === 200) {
-        let _weatherData = [
-          { title: "Temperature", value: `${resp.data.main.temp}°C` },
-          { title: "Humidity", value: `${resp.data.main.humidity}%` },
-          { title: "Wind Speed", value: `${resp.data.wind.speed}m/s` },
-        ];
-        for (const w of resp.data?.weather || []) {
-          _weatherData.push({ title: w.description, icon: w.icon });
-        }
-        setWeatherData(_weatherData);
-      }
+      const _weatherData = await getWeather(latitude, longitude);
+      if (_weatherData) setWeatherData(_weatherData);
     }
   }
 
@@ -144,7 +106,7 @@ export default function Details(props) {
             </CarouselWrapper>
           </div>
           <div className="col-span-3">
-            {title && <h1 className="font-semibold text-3xl mt-4">{title}</h1>}
+            {title && <h1 className=" text-3xl mt-4">{title}</h1>}
 
             {sub_title_1 && <p className="text-sm mt-1">{sub_title_1}</p>}
             {sub_title_2 && <p className="text-sm mt-1">{sub_title_2}</p>}
@@ -163,7 +125,7 @@ export default function Details(props) {
             <p className="mt-2">
               <span className="mr-1">Located in:</span>
               {district_name && district_id && (
-                <span className="text-blue-700 mr-1">
+                <span className="text-blue-400 mr-1">
                   <Link
                     href={`/places/${district_id}+place+to+visit+in+${district_name.replace(
                       / /g,
@@ -175,7 +137,7 @@ export default function Details(props) {
                 </span>
               )}
               {state_name && state_id && (
-                <span className="text-blue-700 mr-1">
+                <span className="text-blue-400 mr-1">
                   <Link
                     href={`/places/${state_id}+place+to+visit+in+${state_name.replace(
                       / /g,
@@ -187,7 +149,7 @@ export default function Details(props) {
                 </span>
               )}
               {country_name && country_id && (
-                <span className="text-blue-700 ">
+                <span className="text-blue-400 ">
                   <Link
                     href={`/places/${country_id}+place+to+visit+in+${country_name.replace(
                       / /g,
@@ -201,7 +163,7 @@ export default function Details(props) {
             </p>
 
             {category && (
-              <p className="text-blue-700 my-2">
+              <p className="text-blue-400 my-2">
                 <span className="mr-1">
                   <Link href="">{category}</Link>
                 </span>
@@ -215,7 +177,7 @@ export default function Details(props) {
             <div className="grid  gap-4 grid-cols-4">
               {info.map((item, index) => (
                 <div key={index} className="col-span-1">
-                  <p className="text-blue-700 flex justify-items-center">
+                  <p className="text-blue-400 flex justify-items-center">
                     <span className="mr-2">{item.icon}</span>
                     {item.value}
                   </p>
@@ -224,11 +186,10 @@ export default function Details(props) {
             </div>
           </section>
         )}
-
         {Object.entries(timings).length > 0 && (
           <section>
             <hr className="my-4" />
-            <h2 className="font-semibold text-xl mb-2">Timings for {title}:</h2>
+            <h2 className="text-black text-xl mb-2">Timings for {title}:</h2>
             <div className="grid gap-4 grid-cols-4">
               {[
                 "Sunday",
@@ -243,9 +204,9 @@ export default function Details(props) {
                   <p>{item}</p>
                   <p
                     className={
-                      timings[item].toLowerCase() === "closed"
+                      timings[item]?.toLowerCase() === "closed"
                         ? "text-red-700"
-                        : "text-blue-700"
+                        : "text-blue-400"
                     }
                   >
                     {timings[item]}
@@ -259,7 +220,7 @@ export default function Details(props) {
         {weatherData.length > 0 && (
           <section>
             <hr className="my-4" />
-            <h2 className="font-semibold text-xl mb-2">Weather:</h2>
+            <h2 className="text-black text-xl mb-2">Weather:</h2>
 
             <div className="grid  gap-4 grid-cols-4">
               {weatherData.map((item, index) => (
@@ -281,9 +242,7 @@ export default function Details(props) {
             {best_months_to_visit.length > 0 && (
               <p className="mb-2">
                 Best month to visit {title} are{" "}
-                <span className="font-semibold">
-                  {best_months_to_visit.join(", ")}
-                </span>
+                <span className="">{best_months_to_visit.join(", ")}</span>
               </p>
             )}
           </section>
@@ -291,13 +250,13 @@ export default function Details(props) {
 
         <section>
           <hr className="my-4" />
-          <h2 className="text-xl font-semibold">About {title}:</h2>
+          <h2 className="text-xl text-black">About {title}:</h2>
           {description_1 && <p className="mt-2">{description_1}</p>}
           {description_2 && <p className="mt-2">{description_2}</p>}
 
           {exploration_hours && (
             <p className="mt-2 capitalize">
-              <span className="font-semibold">
+              <span className="">
                 Average time taken to explore this place:
               </span>{" "}
               {exploration_hours}
@@ -305,7 +264,7 @@ export default function Details(props) {
           )}
           {entry_fee && (
             <p className="mt-2 capitalize">
-              <span className="font-semibold">Entry fee:</span> {entry_fee}
+              <span className="">Entry fee:</span> {entry_fee}
             </p>
           )}
         </section>
@@ -313,17 +272,16 @@ export default function Details(props) {
         {howToReach.length > 0 && (
           <section>
             <hr className="my-4" />
-            <h2 className="text-xl font-semibold">How To Reach {title}:</h2>
+            <h2 className="text-xl text-black">How To Reach {title}:</h2>
             {howToReach.map((item, index) => (
-              <div className="flex py-2 items-center">
+              <div className="flex py-2 items-center" key={index}>
                 <img
                   src={`/images/${item.icon}`}
                   className="w-10 h-10 mr-2 mt-2"
                   alt="By Flight"
                 />
                 <p className="">
-                  <span className="font-semibold">{item.title}:</span>{" "}
-                  {item.value}
+                  <span className="">{item.title}:</span> {item.value}
                 </p>
               </div>
             ))}
@@ -333,7 +291,7 @@ export default function Details(props) {
         {things_to_do.length > 0 && (
           <section>
             <hr className="my-4" />
-            <h2 className="text-xl font-semibold capitalize">
+            <h2 className="text-xl text-black capitalize">
               Things To Do In and around {title}:
             </h2>
             <ol className="list-decimal pl-4">
@@ -349,7 +307,7 @@ export default function Details(props) {
         {famous_for.length > 0 && (
           <section>
             <hr className="my-4" />
-            <h2 className="text-xl font-semibold capitalize">
+            <h2 className="text-xl text-black capitalize">
               {title} is famous for:
             </h2>
             <ol className="list-decimal pl-4">
@@ -365,7 +323,7 @@ export default function Details(props) {
         {famous_food_to_try.length > 0 && (
           <section>
             <hr className="my-4" />
-            <h2 className="text-xl font-semibold capitalize">
+            <h2 className="text-xl text-black capitalize">
               Food That You Can Try Near by
             </h2>
             <p>{famous_food_to_try.join(", ")}</p>
@@ -375,7 +333,7 @@ export default function Details(props) {
         {nearByLocation.length > 0 && (
           <section>
             <hr className="my-4" />
-            <h3 className="font-semibold text-xl mb-2">Similar Places:</h3>
+            <h3 className="text-black text-xl mb-2">Similar Places:</h3>
             <CarouselWrapper>
               {nearByLocation.map((item) => {
                 const { location } = { ...item };
@@ -405,11 +363,9 @@ export default function Details(props) {
                             alt={item.title}
                           />
                         </div>
-                        <h3 className="pt-1 line-clamp-one font-semibold">
-                          {item.title}
-                        </h3>
+                        <h3 className="pt-1 line-clamp-one ">{item.title}</h3>
                       </Link>
-                      <p className="text-blue-700">
+                      <p className="text-blue-400">
                         {district_name && district_id && (
                           <span className="mr-1">
                             <Link href="">{district_name},</Link>
@@ -435,7 +391,7 @@ export default function Details(props) {
         {nearByLocation.length > 0 && (
           <section>
             <hr className="my-4" />
-            <h3 className="font-semibold text-xl mb-2">
+            <h3 className="text-black text-xl mb-2">
               Other Top Ranking Places In {district_name}:
             </h3>
             <CarouselWrapper>
@@ -473,11 +429,9 @@ export default function Details(props) {
                             alt={item.title}
                           />
                         </div>
-                        <h3 className="pt-1 line-clamp-one font-semibold">
-                          {item.title}
-                        </h3>
+                        <h3 className="pt-1 line-clamp-one ">{item.title}</h3>
                       </Link>
-                      <p className="text-blue-700">
+                      <p className="text-blue-400">
                         {district_name && district_id && (
                           <span className="mr-1">
                             <Link href="">{district_name},</Link>
@@ -502,7 +456,7 @@ export default function Details(props) {
       </div>
 
       <aside>
-        <h3 className="font-semibold text-xl">Nearby Places</h3>
+        <h3 className="text-black text-xl">Nearby Places</h3>
         <div className="grid my-4 gap-2 grid-cols-2">
           {nearByLocation.map((item) => {
             let redirect = `/details/${item.uid}`;
@@ -529,9 +483,7 @@ export default function Details(props) {
                         alt={item.title}
                       />
                     </div>
-                    <p className="pt-1 text-sm line-clamp-one font-semibold">
-                      {item.title}
-                    </p>
+                    <p className="pt-1 text-sm line-clamp-one ">{item.title}</p>
                   </Link>
                 </div>
               </div>
@@ -567,6 +519,7 @@ export async function getStaticProps(context) {
   let details = {},
     nearByLocation = [];
   if (uid) {
+    console.log(uid, "uid123");
     const { data } = await client.query({
       query: gql`
         query lists($limit: Int, $skip: Int, $where: JSON) {
@@ -615,8 +568,8 @@ export async function getStaticProps(context) {
                 address
                 phone
                 plus_code
-                geoJson
                 page_URL
+                geoJson
                 category
                 bannerImage
               }
@@ -628,33 +581,14 @@ export async function getStaticProps(context) {
     });
     details = data?.getThingsToDo?.data?.[0] || {};
 
-    nearByLocation = await client.query({
-      query: gql`
-        query lists($limit: Int, $skip: Int, $where: JSON) {
-          getThingsToDo(limit: $limit, skip: $skip, where: $where) {
-            data {
-              uid
-              image
-              title
-              location {
-                uid
-                district_name
-                state {
-                  uid
-                  state_name
-                  country {
-                    uid
-                    country_name
-                  }
-                }
-              }
-            }
-          }
-        }
-      `,
-      variables: { where: {}, limit: 15, skip: 0 },
-    });
-    nearByLocation = nearByLocation?.data?.getThingsToDo?.data || [];
+    const lat = details?.gmap?.geoJson?.coordinates?.[0];
+    const long = details?.gmap?.geoJson?.coordinates?.[1];
+    let nearByLocation = [];
+    if (long && lat) {
+      nearByLocation = await getThingsToDo({
+        where: { lat, long, maxDistance: 1000 },
+      });
+    }
   }
   return { props: { details, nearByLocation } };
 }

@@ -1,19 +1,17 @@
 import Link from "next/link";
+import Image from "next/image";
+
 export default function Header() {
   return (
     <>
       <nav
-        className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
+        className="mx-auto flex max-w-7xl items-center justify-between p-2 lg:px-8"
         aria-label="Global"
       >
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
-            <span className="sr-only">Your Company</span>
-            <img
-              className="h-8 w-auto"
-              src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-              alt=""
-            />
+            <span className="sr-only">Right Diversion</span>
+            <img className="h-16 w-auto" src="/images/logo_rd.png" alt="" />
           </Link>
         </div>
         <div className="flex lg:hidden">
@@ -39,21 +37,9 @@ export default function Header() {
           </button>
         </div>
         <div className="hidden lg:flex lg:gap-x-12">
-            
-          <Link href="/about" className="text-sm font-semibold leading-6 text-gray-900">
+          {/* <Link href="/about" className="text-sm  leading-6 text-gray-900">
             About
-          </Link>
-          <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
-            Marketplace
-          </a>
-          <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
-            Company
-          </a>
-        </div>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
-            Log in <span aria-hidden="true">&rarr;</span>
-          </a>
+          </Link> */}
         </div>
       </nav>
       <div className="lg:hidden" role="dialog" aria-modal="true">
@@ -61,7 +47,7 @@ export default function Header() {
         <div className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
             <Link href="/" className="-m-1.5 p-1.5">
-              <span className="sr-only">Your Company</span>
+              <span className="sr-only">Right Diversion</span>
               <img
                 className="h-8 w-auto"
                 src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
@@ -95,7 +81,7 @@ export default function Header() {
                 <div className="-mx-3">
                   <button
                     type="button"
-                    className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base font-semibold leading-7 hover:bg-gray-50"
+                    className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base  leading-7 hover:bg-gray-50"
                     aria-controls="disclosure-1"
                     aria-expanded="false"
                   >
@@ -116,49 +102,49 @@ export default function Header() {
                   <div className="mt-2 space-y-2" id="disclosure-1">
                     <a
                       href="#"
-                      className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                      className="block rounded-lg py-2 pl-6 pr-3 text-sm  leading-7 text-gray-900 hover:bg-gray-50"
                     >
                       Analytics
                     </a>
 
                     <a
                       href="#"
-                      className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                      className="block rounded-lg py-2 pl-6 pr-3 text-sm  leading-7 text-gray-900 hover:bg-gray-50"
                     >
                       Engagement
                     </a>
 
                     <a
                       href="#"
-                      className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                      className="block rounded-lg py-2 pl-6 pr-3 text-sm  leading-7 text-gray-900 hover:bg-gray-50"
                     >
                       Security
                     </a>
 
                     <a
                       href="#"
-                      className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                      className="block rounded-lg py-2 pl-6 pr-3 text-sm  leading-7 text-gray-900 hover:bg-gray-50"
                     >
                       Integrations
                     </a>
 
                     <a
                       href="#"
-                      className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                      className="block rounded-lg py-2 pl-6 pr-3 text-sm  leading-7 text-gray-900 hover:bg-gray-50"
                     >
                       Automations
                     </a>
 
                     <a
                       href="#"
-                      className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                      className="block rounded-lg py-2 pl-6 pr-3 text-sm  leading-7 text-gray-900 hover:bg-gray-50"
                     >
                       Watch demo
                     </a>
 
                     <a
                       href="#"
-                      className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                      className="block rounded-lg py-2 pl-6 pr-3 text-sm  leading-7 text-gray-900 hover:bg-gray-50"
                     >
                       Contact sales
                     </a>
@@ -166,19 +152,19 @@ export default function Header() {
                 </div>
                 <Link
                   href="/about"
-                  className="-mx-3 block rounded-lg py-2 px-3 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  className="-mx-3 block rounded-lg py-2 px-3 text-base  leading-7 text-gray-900 hover:bg-gray-50"
                 >
                   About
                 </Link>
                 <a
                   href="#"
-                  className="-mx-3 block rounded-lg py-2 px-3 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  className="-mx-3 block rounded-lg py-2 px-3 text-base  leading-7 text-gray-900 hover:bg-gray-50"
                 >
                   Marketplace
                 </a>
                 <a
                   href="#"
-                  className="-mx-3 block rounded-lg py-2 px-3 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  className="-mx-3 block rounded-lg py-2 px-3 text-base  leading-7 text-gray-900 hover:bg-gray-50"
                 >
                   Company
                 </a>
@@ -186,7 +172,7 @@ export default function Header() {
               <div className="py-6">
                 <a
                   href="#"
-                  className="-mx-3 block rounded-lg py-2.5 px-3 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  className="-mx-3 block rounded-lg py-2.5 px-3 text-base  leading-7 text-gray-900 hover:bg-gray-50"
                 >
                   Log in
                 </a>

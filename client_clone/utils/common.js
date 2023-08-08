@@ -1,3 +1,5 @@
+import { Phone, Website, Address } from "@/utils/icons";
+
 export const getHowToReach = ({
   railway_station_distance,
   title = "",
@@ -29,9 +31,50 @@ export const getHowToReach = ({
   return { byAir, byRoad, byTrain };
 };
 
-export const getFileName = (url) => {
-  let a = url.split("=");
-  a = a[a.length - 1];
-  a = a.replace(/:/g);
-  return `${a}.png`;
+export const getWeather = async (latitude, longitude) => {
+  let resp = await fetch(
+    `${process.env.BASE_URL}/api/getWeather?latitude=${latitude}&longitude=${longitude}`
+  );
+  resp = await resp.json();
+  if (resp.status === 200) {
+    let weatherData = [
+      { title: "Temperature", value: `${resp.data.main.temp}°C` },
+      { title: "Humidity", value: `${resp.data.main.humidity}%` },
+      { title: "Wind Speed", value: `${resp.data.wind.speed}m/s` },
+    ];
+    for (const w of resp.data?.weather || []) {
+      weatherData.push({ title: w.description, icon: w.icon });
+    }
+    return weatherData;
+  }
+};
+
+export const getInfo = ({ address, phone, gmapURL, website }) => {
+  let info = [];
+  if (address)
+    info.push({
+      value: (
+        <a target="_blank" href={gmapURL}>
+          {address}
+        </a>
+      ),
+      icon: <Address />,
+    });
+  if (phone)
+    info.push({
+      label: "",
+      value: <a href={`tel:${phone}`}>{phone}</a>,
+      icon: <Phone />,
+    });
+  if (website)
+    info.push({
+      label: "",
+      value: (
+        <a target="_blank" href={website}>
+          {website}
+        </a>
+      ),
+      icon: <Website />,
+    });
+  return info;
 };

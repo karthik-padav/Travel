@@ -32,6 +32,5 @@ export async function getThingsToDo(params) {
 
     variables: { where, limit, skip },
   });
-  return data?.getThingsToDo?.data;
+  return data?.getThingsToDo?.data || [];
 }
-
