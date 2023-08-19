@@ -37,9 +37,9 @@ export default function Header() {
           </button>
         </div>
         <div className="hidden lg:flex lg:gap-x-12">
-          {/* <Link href="/about" className="text-sm  leading-6 text-gray-900">
+          <Link href="/about" className="text-sm  leading-6 text-gray-900">
             About
-          </Link> */}
+          </Link>
         </div>
       </nav>
       <div className="lg:hidden" role="dialog" aria-modal="true">

@@ -13,6 +13,9 @@ export async function getThingsToDo(params) {
             title
             uid
             image
+            gpt {
+              best_months_to_visit
+            }
             location {
               uid
               district_name

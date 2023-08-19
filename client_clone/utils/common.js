@@ -1,4 +1,6 @@
 import { Phone, Website, Address } from "@/utils/icons";
+import { gql } from "@apollo/client";
+import client from "@/apollo/apollo-client";
 
 export const getHowToReach = ({
   railway_station_distance,
@@ -77,4 +79,81 @@ export const getInfo = ({ address, phone, gmapURL, website }) => {
       icon: <Website />,
     });
   return info;
+};
+
+export const meterToKm = (meter) => {
+  return (meter * 0.001).toFixed(1);
+};
+
+export const generateURL = ({ uid, title = "", key }) => {
+  const obj = {
+    about: "/about",
+    privacyPolicy: "/privacy-policy",
+    terms: "/terms",
+    contact: "/contact",
+    details: `/details/${uid}+${title}`,
+    places: `/places/${uid}${title ? `+place+to+visit+in+${title}` : ""}`,
+  };
+  return obj?.[key]?.replace(/ /g, "+") || "/";
+};
+
+export const getLocationList = async ({ key, uid, params }) => {
+  let { where = {}, limit = 15, skip = 0 } = { ...params };
+  switch (key) {
+    case "country":
+      where = { ...where, country_id: uid };
+      let states = await client.query({
+        query: gql`
+          query lists($limit: Int, $skip: Int, $where: JSON) {
+            getStates(limit: $limit, skip: $skip, where: $where) {
+              data {
+                state_name
+                banner_image
+                uid
+              }
+            }
+          }
+        `,
+        variables: { where, limit, skip },
+      });
+      return states?.data?.getStates?.data || [];
+    case "state":
+      where = { ...where, state_id: uid };
+      let district = await client.query({
+        query: gql`
+          query lists($limit: Int, $skip: Int, $where: JSON) {
+            getDistricts(limit: $limit, skip: $skip, where: $where) {
+              data {
+                district_name
+                banner_image
+                uid
+              }
+            }
+          }
+        `,
+        variables: { where, limit, skip },
+      });
+      return district?.data?.getDistricts?.data || [];
+
+    default:
+      return [];
+  }
+};
+
+export const getMonth = () => {
+  var months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  return months[new Date().getMonth() - 1];
 };

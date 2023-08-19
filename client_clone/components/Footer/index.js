@@ -1,11 +1,12 @@
+import { generateURL } from "@/utils/common";
 import Link from "next/link";
 
 export default function Header() {
   const redirects = [
-    { name: "About Us", redirect: "/about" },
-    { name: "Privacy Policy", redirect: "/privacy-policy" },
-    { name: "Terms", redirect: "/terms" },
-    { name: "Contact", redirect: "/contact" },
+    { name: "About Us", key: "about" },
+    { name: "Privacy Policy", key: "privacyPolicy" },
+    { name: "Terms", key: "terms" },
+    { name: "Contact", key: "contact" },
   ];
   return (
     <footer className="bg-[#292929] p-4 lg:px-8 text-white">
@@ -19,7 +20,7 @@ export default function Header() {
           {redirects.map((item, index) => (
             <li key={index}>
               <Link
-                href={item.redirect}
+                href={generateURL({ key: item.key })}
                 className="text-sm hover:underline leading-6"
               >
                 {item.name}

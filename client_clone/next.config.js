@@ -6,6 +6,7 @@ const nextConfig = {
     IMAGE_BASE_URL: process.env.IMAGE_BASE_URL || "",
     BASE_URL: process.env.BASE_URL || "http://localhost:3001",
     IP_INFO: process.env.IP_INFO,
+    MAX_DISTANCE: process.env.MAX_DISTANCE,
   },
   images: {
     domains: [

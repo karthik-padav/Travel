@@ -54,11 +54,13 @@ const typeDefs = gql`
     uid: ID
     country: _Country
     banner_image: String
+    things_to_do: [String]
   }
 
   type _Country {
     country_name: String
     uid: ID
+    things_to_do: [String]
     banner_image: String
   }
 
@@ -66,6 +68,7 @@ const typeDefs = gql`
     district_name: String
     uid: String
     state: _State
+    things_to_do: [String]
     banner_image: String
   }
 

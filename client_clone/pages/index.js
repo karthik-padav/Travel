@@ -4,10 +4,11 @@ import { getThingsToDo } from "@/apollo/services";
 import { gql } from "@apollo/client";
 import client from "../apollo/apollo-client";
 import { useEffect, useState } from "react";
+import { getLocationList, getMonth } from "@/utils/common";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home({ thingsToDo = [], states = [] }) {
+export default function Home({ states = [], thingsToDoThisMonth = [] }) {
   const [nearByPlaces, setNearByPlaces] = useState({});
 
   async function onPageLoad() {
@@ -37,11 +38,10 @@ export default function Home({ thingsToDo = [], states = [] }) {
       const long = c_location?.loc?.split(",")?.[1];
       if (lat && long) {
         const nearBy = await getThingsToDo({
-          where: { lat, long, maxDistance: 1000 },
+          limit: 10,
+          where: { lat, long, maxDistance: process?.env?.MAX_DISTANCE },
         });
-        console.log(nearBy, "nearBy123");
         setNearByPlaces(nearBy);
-        console.log(lat, long, "latLong123");
       }
     }
   }
@@ -49,35 +49,48 @@ export default function Home({ thingsToDo = [], states = [] }) {
   useEffect(() => {
     onPageLoad();
   }, []);
+
   return (
     <HomePage
-      thingsToDo={thingsToDo}
       nearByPlaces={nearByPlaces}
       states={states}
+      thingsToDoThisMonth={thingsToDoThisMonth}
     />
   );
 }
 
 export async function getServerSideProps(context) {
-  const thingsToDo = await getThingsToDo();
-  let states = await client.query({
-    query: gql`
-      query lists($limit: Int, $skip: Int, $where: JSON) {
-        getStates(limit: $limit, skip: $skip, where: $where) {
-          data {
-            state_name
-            banner_image
-            uid
-            country {
-              uid
-              country_name
-            }
-          }
-        }
-      }
-    `,
-    variables: { where: {}, limit: 15, skip: 0 },
-  });
-  states = states?.data?.getStates?.data || [];
-  return { props: { thingsToDo, states } };
+  let promiseResp = [
+    // new Promise(async (res) => {
+    //   res({
+    //     thingsToDoThisMonth: await getThingsToDo({
+    //       limit: 10,
+    //       where: {
+    //         "gpt.best_months_to_visit": { $in: [getMonth()] },
+    //       },
+    //     }),
+    //   });
+    // }),
+
+    new Promise(async (res) => {
+      res({
+        states: await getLocationList({
+          key: "country",
+          params: { where: {}, limit: 15, skip: 0 },
+        }),
+      });
+    }),
+  ];
+  promiseResp = await Promise.allSettled(promiseResp);
+  promiseResp = promiseResp
+    .filter((i) => i.status === "fulfilled")
+    .map((i) => i.value);
+
+  return {
+    props: {
+      ...promiseResp.find((i) => i.thingsToDo),
+      ...promiseResp.find((i) => i.states),
+      // ...promiseResp.find((i) => i.thingsToDoThisMonth),
+    },
+  };
 }

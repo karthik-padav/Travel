@@ -6,7 +6,6 @@ const cors = Cors({
 });
 export default cors(async function handler(req, res) {
   const { latitude, longitude } = { ...req?.query };
-  console.log(latitude, longitude, "latitude, longitude");
   if (latitude && longitude) {
     const API_KEY = "5c018098d783810191a3b46158c7382c";
     let resp = await fetch(

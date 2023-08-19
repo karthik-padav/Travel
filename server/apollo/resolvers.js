@@ -26,10 +26,8 @@ const resolvers = {
       return "Hello world";
     },
     getThingsToDo: async (_, args) => {
-      const { sort = "createdAt", limit, skip = 0, where = {} } = args;
+      const { sort = "createdAt", limit, where = {} } = args;
       const { lat, long, maxDistance, ...restWhere } = where;
-      console.log(args, "args123");
-      console.log(restWhere, "restWhere123");
       let geoRadius = [];
       if (lat && long) {
         geoRadius = [
@@ -42,13 +40,13 @@ const resolvers = {
               distanceField: "distance",
               spherical: true,
               maxDistance: maxDistance || 1000,
+              sort: "distance",
             },
           },
         ];
       }
       let toDoArray = [
         ...geoRadius,
-        { $match: restWhere },
         {
           $lookup: {
             from: "district",
@@ -76,17 +74,22 @@ const resolvers = {
           },
         },
         { $unwind: "$location.state.country" },
+        { $match: restWhere },
       ];
       if (limit > 1) toDoArray.push({ $limit: limit });
+      toDoArray.push({ $sort: { "gmap.review_count": -1 } });
       await ToDo.init();
       const [listResult, countResult] = await Promise.all([
         ToDo.aggregate(toDoArray),
         ToDo.count(restWhere),
       ]);
+      console.log(listResult, "listResult123");
+      console.log(restWhere, "restWhere123");
       return { data: listResult, totalCount: countResult };
     },
     getDistricts: async (_, args) => {
       const { sort = "createdAt", limit = 20, skip = 0, where = {} } = args;
+      console.log(JSON.stringify(where), "restWhere");
       const [listResult, countResult] = await Promise.all([
         District.aggregate([
           {
